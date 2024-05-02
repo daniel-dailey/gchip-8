@@ -10,6 +10,10 @@ func (c *Chip8) rand() byte {
 	return byte(rand.New(rand.NewSource(time.Now().UnixMilli())).Intn(255))
 }
 
+func (c *Chip8) op() uint16 {
+	return (c.opcode & 0xF000) >> 12
+}
+
 func (c *Chip8) vx() uint16 {
 	return (c.opcode & 0x0F00) >> 8
 }
@@ -18,21 +22,22 @@ func (c *Chip8) vy() uint16 {
 	return (c.opcode & 0x00F0) >> 4
 }
 
-func (c *Chip8) kk() byte {
+func (c *Chip8) nn() byte {
 	return byte(c.opcode & 0x00FF)
 }
 
 func (c *Chip8) cycle() {
 	c.opcode = uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
 	c.pc += 2
-	c.funcTable[c.opcode>>12]()
+	c.funcTable[c.op()]()
 	if c.delay > 0 {
 		c.delay--
 	}
 	if c.sound > 0 {
 		c.sound--
 	}
-	c.logger.Info().Msg(fmt.Sprintf("Index: %d, PC: %d, Opcode: %X, Opcode (shift): %X, vx: %x, kk: %x", c.i, c.pc, c.opcode, c.opcode>>12, c.vx(), c.kk()))
+	c.ticks++
+	c.logger.Info().Msg(fmt.Sprintf("Index: %d, PC: %d, Opcode: %X, Opcode (shift): %X, vx: %X, nn: %X, tick: %d", c.i, c.pc, c.opcode, c.op(), c.vx(), c.nn(), c.ticks))
 }
 
 func (c *Chip8) Cycle() {

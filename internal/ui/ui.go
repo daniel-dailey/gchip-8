@@ -86,7 +86,7 @@ func (ui *UI) Update(buf [2048]uint32) {
 	ui.lastUpdateCycleTime = append(ui.lastUpdateCycleTime, t2-t1)
 }
 
-func (ui *UI) ProcessInput(keys *[16]byte) bool {
+func (ui *UI) ProcessInput(keys *[16]byte, sigStep chan bool) bool {
 	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 		switch event := event.(type) {
 		case *sdl.QuitEvent:
@@ -99,6 +99,8 @@ func (ui *UI) ProcessInput(keys *[16]byte) bool {
 				switch key {
 				case sdl.K_ESCAPE:
 					return false
+				case sdl.K_SPACE:
+					sigStep <- true
 				case sdl.K_x:
 					keys[0] = 1
 				case sdl.K_1:

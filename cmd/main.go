@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	debug := true
+	block := make(chan bool)
 	c8 := chip8.Init()
 	c8.LoadROM("../roms/maze.ch8")
 	ui, err := ui.Init()
@@ -25,13 +27,26 @@ func main() {
 	defer sdl.Quit()
 	defer ui.GetRenderer().Destroy()
 	defer ui.GetWindow().Destroy()
+
+	if debug {
+		go func() {
+			for range block {
+				c8.Cycle()
+				ui.Update(c8.GetDisplayBuffer())
+			}
+		}()
+	}
+
 	for {
-		if running := ui.ProcessInput(c8.GetKeys()); !running {
+		if running := ui.ProcessInput(c8.GetKeys(), block); !running {
 			break
 		}
-		c8.Cycle()
+		if debug {
+			continue
+		}
 		ui.Update(c8.GetDisplayBuffer())
-		sdl.Delay(1000)
+		c8.Cycle()
+		sdl.Delay(16)
 	}
 	logger.Info().Any(c8.GetCycleTimes()).Msg("Exiting...")
 }

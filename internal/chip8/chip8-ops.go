@@ -19,14 +19,14 @@ func (c *Chip8) op2nnn() {
 	c.pc = addr
 }
 
-func (c *Chip8) op3xkk() {
-	if c.registers[c.vx()] == c.kk() {
+func (c *Chip8) op3xnn() {
+	if c.registers[c.vx()] == c.nn() {
 		c.pc += 2
 	}
 }
 
-func (c *Chip8) op4xkk() {
-	if c.registers[c.vx()] != c.kk() {
+func (c *Chip8) op4xnn() {
+	if c.registers[c.vx()] != c.nn() {
 		c.pc += 2
 	}
 }
@@ -37,12 +37,12 @@ func (c *Chip8) op5xy0() {
 	}
 }
 
-func (c *Chip8) op6xkk() {
-	c.registers[c.vx()] = c.kk()
+func (c *Chip8) op6xnn() {
+	c.registers[c.vx()] = c.nn()
 }
 
-func (c *Chip8) op7xkk() {
-	c.registers[c.vx()] += c.kk()
+func (c *Chip8) op7xnn() {
+	c.registers[c.vx()] += c.nn()
 }
 
 func (c *Chip8) op8xy0() {
@@ -64,38 +64,38 @@ func (c *Chip8) op8xy3() {
 func (c *Chip8) op8xy4() {
 	sum := c.registers[c.vx()] + c.registers[c.vx()]
 	if sum > 255 {
-		c.registers[0xF] = 1
+		c.registers[RegisterFlagOverflow] = 1
 	} else {
-		c.registers[0xF] = 0
+		c.registers[RegisterFlagOverflow] = 0
 	}
 	c.registers[c.vx()] = byte(sum) & 0xFF
 }
 
 func (c *Chip8) op8xy5() {
 	if c.registers[c.vx()] > c.registers[c.vy()] {
-		c.registers[0xF] = 1
+		c.registers[RegisterFlagOverflow] = 1
 	} else {
-		c.registers[0xF] = 0
+		c.registers[RegisterFlagOverflow] = 0
 	}
 	c.registers[c.vx()] -= c.registers[c.vy()]
 }
 
 func (c *Chip8) op8xy6() {
-	c.registers[0xF] = c.registers[c.vx()] & 0x1
+	c.registers[RegisterFlagOverflow] = c.registers[c.vx()] & 0x1
 	c.registers[c.vx()] >>= 1
 }
 
 func (c *Chip8) op8xy7() {
 	if c.registers[c.vy()] > c.registers[c.vx()] {
-		c.registers[0xF] = 1
+		c.registers[RegisterFlagOverflow] = 1
 	} else {
-		c.registers[0xF] = 0
+		c.registers[RegisterFlagOverflow] = 0
 	}
 	c.registers[c.vx()] = c.registers[c.vy()] - c.registers[c.vx()]
 }
 
 func (c *Chip8) op8xyE() {
-	c.registers[0xF] = c.registers[c.vx()] >> 7
+	c.registers[RegisterFlagOverflow] = c.registers[c.vx()] >> 7
 	c.registers[c.vx()] <<= 1
 }
 
@@ -114,15 +114,15 @@ func (c *Chip8) opBnnn() {
 	c.pc = addr + uint16(c.registers[0])
 }
 
-func (c *Chip8) opCxkk() {
-	c.registers[c.vx()] = c.rand() & c.kk()
+func (c *Chip8) opCxnn() {
+	c.registers[c.vx()] = c.rand() & c.nn()
 }
 
 func (c *Chip8) opDxyn() {
 	height := c.opcode & 0x000F
 	xPos := c.registers[c.vx()] % VideoBufferWidth
 	yPos := c.registers[c.vy()] % VideoBufferHeight
-	c.registers[0xF] = 0
+	c.registers[RegisterFlagOverflow] = 0
 	for row := uint16(0); row < height; row++ {
 		sb := c.memory[c.i+row]
 		for col := uint16(0); col < 8; col++ {
@@ -134,7 +134,7 @@ func (c *Chip8) opDxyn() {
 			screenPixel := &c.display[displayIndex]
 			if sp != 0 {
 				if *screenPixel == 0xFFFFFFFF {
-					c.registers[0xF] = 1
+					c.registers[RegisterFlagOverflow] = 1
 				}
 				*screenPixel ^= 0xFFFFFFFF
 			}

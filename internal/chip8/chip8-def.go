@@ -3,11 +3,12 @@ package chip8
 import "gochip8/internal/clog"
 
 const (
-	StartAddr         = 0x200
-	FontsetStartAddr  = 0x50
-	VideoBufferWidth  = 64
-	VideoBufferHeight = 32
-	MemoryBufferSize  = 4096
+	StartAddr            = 0x200
+	FontsetStartAddr     = 0x50
+	VideoBufferWidth     = 64
+	VideoBufferHeight    = 32
+	MemoryBufferSize     = 4096
+	RegisterFlagOverflow = 0xF
 )
 
 var fontset = [80]byte{
@@ -54,4 +55,5 @@ type Chip8 struct {
 	cycleTimes []int64
 	logger     *clog.Log
 	romSize    int
+	ticks      int64
 }
