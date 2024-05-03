@@ -3,12 +3,13 @@ package chip8
 import "gochip8/internal/clog"
 
 const (
-	StartAddr            = 0x200
-	FontsetStartAddr     = 0x50
-	VideoBufferWidth     = 64
-	VideoBufferHeight    = 32
-	MemoryBufferSize     = 4096
-	RegisterFlagOverflow = 0xF
+	StartAddr        = 0x200
+	FontsetStartAddr = 0x50
+	VF               = 0xF
+
+	VideoBufferWidth  = 64
+	VideoBufferHeight = 32
+	MemoryBufferSize  = 4096
 )
 
 var fontset = [80]byte{
@@ -32,11 +33,11 @@ var fontset = [80]byte{
 
 type Chip8 struct {
 	//memory
-	registers [16]byte
-	keys      [16]byte
-	stack     [16]uint16
-	memory    [MemoryBufferSize]byte
-	display   [VideoBufferWidth * VideoBufferHeight]uint32
+	v       [16]byte
+	keys    [16]byte
+	stack   [16]uint16
+	memory  [MemoryBufferSize]byte
+	display [VideoBufferWidth * VideoBufferHeight]uint32
 	//counters + codes
 	i      uint16
 	pc     uint16

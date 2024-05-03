@@ -20,87 +20,87 @@ func (c *Chip8) op2nnn() {
 }
 
 func (c *Chip8) op3xnn() {
-	if c.registers[c.vx()] == c.nn() {
+	if c.v[c.vx()] == c.nn() {
 		c.pc += 2
 	}
 }
 
 func (c *Chip8) op4xnn() {
-	if c.registers[c.vx()] != c.nn() {
+	if c.v[c.vx()] != c.nn() {
 		c.pc += 2
 	}
 }
 
 func (c *Chip8) op5xy0() {
-	if c.registers[c.vx()] == c.registers[c.vy()] {
+	if c.v[c.vx()] == c.v[c.vy()] {
 		c.pc += 2
 	}
 }
 
 func (c *Chip8) op6xnn() {
-	c.registers[c.vx()] = c.nn()
+	c.v[c.vx()] = c.nn()
 }
 
 func (c *Chip8) op7xnn() {
-	c.registers[c.vx()] += c.nn()
+	c.v[c.vx()] += c.nn()
 }
 
 func (c *Chip8) op8xy0() {
-	c.registers[c.vx()] = c.registers[c.vy()]
+	c.v[c.vx()] = c.v[c.vy()]
 }
 
 func (c *Chip8) op8xy1() {
-	c.registers[c.vx()] |= c.registers[c.vy()]
+	c.v[c.vx()] |= c.v[c.vy()]
 }
 
 func (c *Chip8) op8xy2() {
-	c.registers[c.vx()] &= c.registers[c.vy()]
+	c.v[c.vx()] &= c.v[c.vy()]
 }
 
 func (c *Chip8) op8xy3() {
-	c.registers[c.vx()] ^= c.registers[c.vy()]
+	c.v[c.vx()] ^= c.v[c.vy()]
 }
 
 func (c *Chip8) op8xy4() {
-	sum := c.registers[c.vx()] + c.registers[c.vx()]
+	sum := c.v[c.vx()] + c.v[c.vx()]
 	if sum > 255 {
-		c.registers[RegisterFlagOverflow] = 1
+		c.v[VF] = 1
 	} else {
-		c.registers[RegisterFlagOverflow] = 0
+		c.v[VF] = 0
 	}
-	c.registers[c.vx()] = byte(sum) & 0xFF
+	c.v[c.vx()] = byte(sum) & 0xFF
 }
 
 func (c *Chip8) op8xy5() {
-	if c.registers[c.vx()] > c.registers[c.vy()] {
-		c.registers[RegisterFlagOverflow] = 1
+	if c.v[c.vx()] > c.v[c.vy()] {
+		c.v[VF] = 1
 	} else {
-		c.registers[RegisterFlagOverflow] = 0
+		c.v[VF] = 0
 	}
-	c.registers[c.vx()] -= c.registers[c.vy()]
+	c.v[c.vx()] -= c.v[c.vy()]
 }
 
 func (c *Chip8) op8xy6() {
-	c.registers[RegisterFlagOverflow] = c.registers[c.vx()] & 0x1
-	c.registers[c.vx()] >>= 1
+	c.v[VF] = c.v[c.vx()] & 0x1
+	c.v[c.vx()] >>= 1
 }
 
 func (c *Chip8) op8xy7() {
-	if c.registers[c.vy()] > c.registers[c.vx()] {
-		c.registers[RegisterFlagOverflow] = 1
+	if c.v[c.vy()] > c.v[c.vx()] {
+		c.v[VF] = 1
 	} else {
-		c.registers[RegisterFlagOverflow] = 0
+		c.v[VF] = 0
 	}
-	c.registers[c.vx()] = c.registers[c.vy()] - c.registers[c.vx()]
+	c.v[c.vx()] = c.v[c.vy()] - c.v[c.vx()]
 }
 
 func (c *Chip8) op8xyE() {
-	c.registers[RegisterFlagOverflow] = c.registers[c.vx()] >> 7
-	c.registers[c.vx()] <<= 1
+	c.v[VF] = c.v[c.vx()] >> 7
+	c.v[c.vx()] <<= 1
 }
 
 func (c *Chip8) op9xy0() {
-	if c.registers[c.vx()] != c.registers[c.vy()] {
+	if c.v[c.vx()] != c.v[c.vy()] {
 		c.pc += 2
 	}
 }
@@ -111,18 +111,18 @@ func (c *Chip8) opAnnn() {
 
 func (c *Chip8) opBnnn() {
 	addr := c.opcode & 0x0FFF
-	c.pc = addr + uint16(c.registers[0])
+	c.pc = addr + uint16(c.v[0])
 }
 
 func (c *Chip8) opCxnn() {
-	c.registers[c.vx()] = c.rand() & c.nn()
+	c.v[c.vx()] = c.rand() & c.nn()
 }
 
 func (c *Chip8) opDxyn() {
 	height := c.opcode & 0x000F
-	xPos := c.registers[c.vx()] % VideoBufferWidth
-	yPos := c.registers[c.vy()] % VideoBufferHeight
-	c.registers[RegisterFlagOverflow] = 0
+	xPos := c.v[c.vx()] % VideoBufferWidth
+	yPos := c.v[c.vy()] % VideoBufferHeight
+	c.v[VF] = 0
 	for row := uint16(0); row < height; row++ {
 		sb := c.memory[c.i+row]
 		for col := uint16(0); col < 8; col++ {
@@ -134,7 +134,7 @@ func (c *Chip8) opDxyn() {
 			screenPixel := &c.display[displayIndex]
 			if sp != 0 {
 				if *screenPixel == 0xFFFFFFFF {
-					c.registers[RegisterFlagOverflow] = 1
+					c.v[VF] = 1
 				}
 				*screenPixel ^= 0xFFFFFFFF
 			}
@@ -143,78 +143,78 @@ func (c *Chip8) opDxyn() {
 }
 
 func (c *Chip8) opEx9E() {
-	if c.keys[c.registers[c.vx()]] != 0 {
+	if c.keys[c.v[c.vx()]] != 0 {
 		c.pc += 2
 	}
 }
 
 func (c *Chip8) opExA1() {
-	if c.keys[c.registers[c.vx()]] == 0 {
+	if c.keys[c.v[c.vx()]] == 0 {
 		c.pc += 2
 	}
 }
 
 func (c *Chip8) opFx07() {
-	c.registers[c.vx()] = c.delay
+	c.v[c.vx()] = c.delay
 }
 
 func (c *Chip8) opFx0A() {
 	Vx := c.vx()
 	if c.keys[0] != 0 {
-		c.registers[Vx] = 0
+		c.v[Vx] = 0
 	} else if c.keys[1] != 0 {
-		c.registers[Vx] = 1
+		c.v[Vx] = 1
 	} else if c.keys[2] != 0 {
-		c.registers[Vx] = 2
+		c.v[Vx] = 2
 	} else if c.keys[3] != 0 {
-		c.registers[Vx] = 3
+		c.v[Vx] = 3
 	} else if c.keys[4] != 0 {
-		c.registers[Vx] = 4
+		c.v[Vx] = 4
 	} else if c.keys[5] != 0 {
-		c.registers[Vx] = 5
+		c.v[Vx] = 5
 	} else if c.keys[6] != 0 {
-		c.registers[Vx] = 6
+		c.v[Vx] = 6
 	} else if c.keys[7] != 0 {
-		c.registers[Vx] = 7
+		c.v[Vx] = 7
 	} else if c.keys[8] != 0 {
-		c.registers[Vx] = 8
+		c.v[Vx] = 8
 	} else if c.keys[9] != 0 {
-		c.registers[Vx] = 9
+		c.v[Vx] = 9
 	} else if c.keys[10] != 0 {
-		c.registers[Vx] = 10
+		c.v[Vx] = 10
 	} else if c.keys[11] != 0 {
-		c.registers[Vx] = 11
+		c.v[Vx] = 11
 	} else if c.keys[12] != 0 {
-		c.registers[Vx] = 12
+		c.v[Vx] = 12
 	} else if c.keys[13] != 0 {
-		c.registers[Vx] = 13
+		c.v[Vx] = 13
 	} else if c.keys[14] != 0 {
-		c.registers[Vx] = 14
+		c.v[Vx] = 14
 	} else if c.keys[15] != 0 {
-		c.registers[Vx] = 15
+		c.v[Vx] = 15
 	} else {
 		c.pc -= 2
 	}
 }
 
 func (c *Chip8) opFx15() {
-	c.delay = c.registers[c.vx()]
+	c.delay = c.v[c.vx()]
 }
 
 func (c *Chip8) opFx18() {
-	c.sound = c.registers[c.vx()]
+	c.sound = c.v[c.vx()]
 }
 
 func (c *Chip8) opFx1E() {
-	c.i += uint16(c.registers[c.vx()])
+	c.i += uint16(c.v[c.vx()])
 }
 
 func (c *Chip8) opFx29() {
-	c.i = FontsetStartAddr + uint16(c.registers[c.vx()])*5
+	c.i = FontsetStartAddr + uint16(c.v[c.vx()])*5
 }
 
 func (c *Chip8) opFx33() {
-	val := c.registers[c.vx()]
+	val := c.v[c.vx()]
 	c.memory[c.i+2] = val % 10
 	val /= 10
 	c.memory[c.i+1] = val % 10
@@ -224,13 +224,13 @@ func (c *Chip8) opFx33() {
 
 func (c *Chip8) opFx55() {
 	for i := uint16(0); i <= c.vx(); i++ {
-		c.memory[c.i+i] = c.registers[i]
+		c.memory[c.i+i] = c.v[i]
 	}
 }
 
 func (c *Chip8) opFx65() {
 	for i := uint16(0); i <= c.vx(); i++ {
-		c.registers[i] = c.memory[c.i+i]
+		c.v[i] = c.memory[c.i+i]
 	}
 }
 

@@ -91,13 +91,13 @@ func (c *Chip8) initOpTables() {
 
 func Init() *Chip8 {
 	c := &Chip8{
-		pc:        StartAddr,
-		memory:    [MemoryBufferSize]byte{},
-		display:   [VideoBufferWidth * VideoBufferHeight]uint32{},
-		stack:     [16]uint16{},
-		keys:      [16]byte{},
-		registers: [16]byte{},
-		logger:    clog.NewLog(int(clog.LogLevelInfo), "Chip8", "c8-cpu"),
+		pc:      StartAddr,
+		memory:  [MemoryBufferSize]byte{},
+		display: [VideoBufferWidth * VideoBufferHeight]uint32{},
+		stack:   [16]uint16{},
+		keys:    [16]byte{},
+		v:       [16]byte{},
+		logger:  clog.NewLog(int(clog.LogLevelInfo), "Chip8", "c8-cpu"),
 	}
 	c.loadFontset()
 	c.initOpTables()

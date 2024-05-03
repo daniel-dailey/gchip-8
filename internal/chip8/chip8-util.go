@@ -37,7 +37,7 @@ func (c *Chip8) cycle() {
 		c.sound--
 	}
 	c.ticks++
-	c.logger.Info().Msg(fmt.Sprintf("Index: %d, PC: %d, Opcode: %X, Opcode (shift): %X, vx: %X, nn: %X, tick: %d", c.i, c.pc, c.opcode, c.op(), c.vx(), c.nn(), c.ticks))
+	c.logger.Info().Msg(fmt.Sprintf("I: %d, sp: %X pc: %d, op: %X, shift: %X, vx: %X, nn: %X, tick: %d", c.i, c.sp, c.pc, c.opcode, c.op(), c.vx(), c.nn(), c.ticks))
 }
 
 func (c *Chip8) Cycle() {
@@ -56,5 +56,5 @@ func (c *Chip8) GetCycleTimes() []int64 {
 }
 
 func (c *Chip8) GetKeys() *[16]byte {
-	return &c.registers
+	return &c.v
 }
