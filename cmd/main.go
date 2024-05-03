@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	debug := true
+	debug := false
 	block := make(chan bool)
 	c8 := chip8.Init()
 	c8.LoadROM("../roms/maze.ch8")
@@ -46,7 +46,7 @@ func main() {
 		}
 		ui.Update(c8.GetDisplayBuffer())
 		c8.Cycle()
-		sdl.Delay(16)
+		sdl.Delay(3)
 	}
 	logger.Info().Any(c8.GetCycleTimes()).Msg("Exiting...")
 }
