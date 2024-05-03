@@ -22,8 +22,16 @@ func (c *Chip8) vy() uint16 {
 	return (c.opcode & 0x00F0) >> 4
 }
 
+func (c *Chip8) n() byte {
+	return byte(c.opcode & 0x000F)
+}
+
 func (c *Chip8) nn() byte {
 	return byte(c.opcode & 0x00FF)
+}
+
+func (c *Chip8) nnn() uint16 {
+	return c.opcode & 0x0FFF
 }
 
 func (c *Chip8) cycle() {

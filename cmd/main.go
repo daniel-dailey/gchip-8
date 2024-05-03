@@ -13,7 +13,7 @@ func main() {
 	debug := false
 	block := make(chan bool)
 	c8 := chip8.Init()
-	c8.LoadROM("../roms/maze.ch8")
+	c8.LoadROM("../roms/tetris.ch8")
 	ui, err := ui.Init()
 	if err != nil {
 		panic(err)

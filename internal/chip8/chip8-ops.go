@@ -9,14 +9,13 @@ func (c *Chip8) op00EE() {
 }
 
 func (c *Chip8) op1nnn() {
-	c.pc = c.opcode & 0x0FFF
+	c.pc = c.nnn()
 }
 
 func (c *Chip8) op2nnn() {
-	addr := c.opcode & 0x0FFF
 	c.stack[c.sp] = c.pc
 	c.sp++
-	c.pc = addr
+	c.pc = c.nnn()
 }
 
 func (c *Chip8) op3xnn() {
@@ -106,12 +105,11 @@ func (c *Chip8) op9xy0() {
 }
 
 func (c *Chip8) opAnnn() {
-	c.i = c.opcode & 0x0FFF
+	c.i = c.nnn()
 }
 
 func (c *Chip8) opBnnn() {
-	addr := c.opcode & 0x0FFF
-	c.pc = addr + uint16(c.v[0])
+	c.pc = c.nnn() + uint16(c.v[0])
 }
 
 func (c *Chip8) opCxnn() {
@@ -119,11 +117,11 @@ func (c *Chip8) opCxnn() {
 }
 
 func (c *Chip8) opDxyn() {
-	height := c.opcode & 0x000F
+	height := c.n()
 	xPos := c.v[c.vx()] % VideoBufferWidth
 	yPos := c.v[c.vy()] % VideoBufferHeight
 	c.v[VF] = 0
-	for row := uint16(0); row < height; row++ {
+	for row := uint16(0); row < uint16(height); row++ {
 		sb := c.memory[c.i+row]
 		for col := uint16(0); col < 8; col++ {
 			sp := sb & (0x80 >> col)

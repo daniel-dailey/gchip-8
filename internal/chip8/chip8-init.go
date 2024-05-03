@@ -5,12 +5,6 @@ import (
 	"os"
 )
 
-func (c *Chip8) loadFontset() {
-	for i, b := range fontset {
-		c.memory[FontsetStartAddr+i] = b
-	}
-}
-
 func (c *Chip8) LoadROM(fn string) {
 	// Load the ROM into memory starting at 0x200
 	f, err := os.ReadFile(fn)
@@ -99,7 +93,9 @@ func Init() *Chip8 {
 		v:       [16]byte{},
 		logger:  clog.NewLog(int(clog.LogLevelInfo), "Chip8", "c8-cpu"),
 	}
-	c.loadFontset()
+	for i, b := range fontset {
+		c.memory[FontsetStartAddr+i] = b
+	}
 	c.initOpTables()
 	return c
 }
