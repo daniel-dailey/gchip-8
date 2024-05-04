@@ -5,15 +5,25 @@ import (
 	"gochip8/internal/clog"
 	"gochip8/internal/ui"
 	"gochip8/roms"
+	"os"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+func getRomBytes() []byte {
+	f, err := os.ReadFile("../roms/test_opcode.ch8")
+	if err != nil {
+		return nil
+	}
+	return f
+}
 
 func main() {
 	debug := false
 	block := make(chan bool)
 	c8 := chip8.Init()
-	c8.LoadROM("../roms/tetris.ch8")
+	c8.Load(getRomBytes())
+	roms.DumpRomInfo(getRomBytes())
 	ui, err := ui.Init()
 	if err != nil {
 		panic(err)
@@ -23,7 +33,6 @@ func main() {
 	}
 	logger := clog.NewLog(0, "MAIN", "c8-emulator")
 	logger.Info().Msg("Starting...")
-	roms.DumpRomInfo(c8.GetROM())
 	defer sdl.Quit()
 	defer ui.GetRenderer().Destroy()
 	defer ui.GetWindow().Destroy()
@@ -46,7 +55,7 @@ func main() {
 		}
 		ui.Update(c8.GetDisplayBuffer())
 		c8.Cycle()
-		sdl.Delay(3)
+		sdl.Delay(10)
 	}
-	logger.Info().Any(c8.GetCycleTimes()).Msg("Exiting...")
+	logger.Info().Msg("Exiting...")
 }
