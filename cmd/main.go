@@ -11,7 +11,7 @@ import (
 )
 
 func getRomBytes() []byte {
-	f, err := os.ReadFile("../roms/test_opcode.ch8")
+	f, err := os.ReadFile("../roms/pong1p.ch8")
 	if err != nil {
 		return nil
 	}

@@ -1,7 +1,5 @@
 package chip8
 
-import "fmt"
-
 func (c *Chip8) executeCurrentInstruction() {
 	op := (c.opcode & 0xF000) >> 12
 	vx := c.opcode.vx()
@@ -101,21 +99,20 @@ func (c *Chip8) executeInstructionType0() {
 }
 
 func (c *Chip8) executeInstructionType8(vx, vy uint16) {
-	fmt.Printf("executeInstructionType8: %X\n ", c.opcode&0xFF)
-	switch c.opcode & 0xFF {
-	case 0x00:
+	switch c.opcode & 0xF {
+	case 0x0:
 		//Set Vx = Vy
 		c.registers.copyVRegister(vx, vy)
-	case 0x01:
+	case 0x1:
 		//Set Vx = Vx OR Vy
 		c.registers.orVRegister(vx, vy)
-	case 0x02:
+	case 0x2:
 		//Set Vx = Vx AND Vy
 		c.registers.andVRegister(vx, vy)
-	case 0x03:
+	case 0x3:
 		//Set Vx = Vx XOR Vy
 		c.registers.xorVRegister(vx, vy)
-	case 0x04:
+	case 0x4:
 		//Set Vx = Vx + Vy, set VF = carry
 		sum := c.registers.sumVRegister(vx, vy)
 		if sum > 255 {
@@ -124,7 +121,7 @@ func (c *Chip8) executeInstructionType8(vx, vy uint16) {
 			c.registers.clearVRegister(VF)
 		}
 		c.registers.setVRegister(vx, uint8(sum&0xFF))
-	case 0x05:
+	case 0x5:
 		//Set Vx = Vx - Vy, set VF = NOT borrow
 		if c.registers.isGreaterThan(vx, vy) {
 			c.registers.setVRegister(VF, 1)
@@ -132,12 +129,12 @@ func (c *Chip8) executeInstructionType8(vx, vy uint16) {
 			c.registers.clearVRegister(VF)
 		}
 		c.registers.decrementVRegister(vx, c.registers.getVRegisterVal(vy))
-	case 0x06:
+	case 0x6:
 		//Set Vx = Vx SHR 1
 		maskedVxRegisterValue := c.registers.getVRegisterVal(vx) & 0x1
 		c.registers.setVRegister(VF, maskedVxRegisterValue)
 		c.registers.shiftRightVRegister(vx)
-	case 0x07:
+	case 0x7:
 		//Set Vx = Vy - Vx, set VF = NOT borrow
 		if c.registers.isGreaterThan(vy, vx) {
 			c.registers.setVRegister(VF, 1)
@@ -146,12 +143,11 @@ func (c *Chip8) executeInstructionType8(vx, vy uint16) {
 		}
 		diff := c.registers.diffVRegister(vy, vx)
 		c.registers.setVRegister(vx, diff)
-	case 0x0E:
+	case 0xE:
 		//Set Vx = Vx SHL 1
 		c.registers.setVRegister(VF, c.registers.getVRegisterVal(vx)>>7)
 		c.registers.shiftLeftVRegister(vx)
 	default:
-		fmt.Printf("executeInstructionType8: %X\n ", c.opcode&0xFF)
 		c.no_op()
 	}
 }
