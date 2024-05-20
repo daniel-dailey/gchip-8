@@ -1,11 +1,11 @@
 package chip8
 
 func (s *Stack) decrementStackPointer() {
-	s.stackPointer--
+	s.stackPointer -= 1
 }
 
 func (s *Stack) incrementStackPointer() {
-	s.stackPointer++
+	s.stackPointer += 1
 }
 
 func (s *Stack) setProgramCounter(pc uint16) {

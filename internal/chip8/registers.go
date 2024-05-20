@@ -36,8 +36,8 @@ func (r *Registers) xorVRegister(register1, register2 uint16) {
 	r.vRegister[register1] ^= r.vRegister[register2]
 }
 
-func (r *Registers) sumVRegister(register1 uint16, register2 uint16) uint16 {
-	return uint16(r.vRegister[register1]) + uint16(r.vRegister[register2])
+func (r *Registers) sumVRegister(register1 uint16, register2 uint16) uint8 {
+	return r.vRegister[register1] + r.vRegister[register2]
 }
 
 func (r *Registers) diffVRegister(register1 uint16, register2 uint16) uint8 {
@@ -60,12 +60,12 @@ func (r *Registers) areVRegistersEqual(register1 uint16, register2 uint16) bool 
 	return r.vRegister[register1] == r.vRegister[register2]
 }
 
-func (r *Registers) setIRegister(value uint16) {
-	r.iRegister = value
-}
-
 func (r *Registers) getIRegister() uint16 {
 	return r.iRegister
+}
+
+func (r *Registers) setIRegister(value uint16) {
+	r.iRegister = value
 }
 
 func (r *Registers) setDelay(value uint8) {

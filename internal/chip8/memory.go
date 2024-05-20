@@ -7,10 +7,6 @@ func (m *Memory) loadROM(raw []byte) {
 	}
 }
 
-func (m *Memory) getROM() []uint8 {
-	return m.buf[StartAddr:]
-}
-
 func (m *Memory) loadFontset() {
 	for i, b := range fontset {
 		m.buf[FontsetStartAddr+i] = b

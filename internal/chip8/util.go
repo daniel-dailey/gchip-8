@@ -10,20 +10,20 @@ func (c *Chip8) rand() uint8 {
 	return uint8(rand.New(rand.NewSource(time.Now().UnixMilli())).Intn(255))
 }
 
-func (c *Chip8) fetchOpcode() Opcode {
+func (c *Chip8) fetchOpcode() {
 	addrVal := c.memory.read(c.stack.getProgramCounter())
 	addrValInc := c.memory.read(c.stack.getProgramCounter() + 1)
-	c.stack.incrementProgramCounter()
-	return Opcode(uint16(addrVal)<<8 | uint16(addrValInc))
+	c.opcode = Opcode((uint16(addrVal)<<8 | uint16(addrValInc)))
 }
 
 func (c *Chip8) cycle() {
-	c.opcode = c.fetchOpcode()
+	c.fetchOpcode()
+	c.stack.incrementProgramCounter()
 	c.executeCurrentInstruction()
 	c.registers.decrementDelay()
 	c.registers.decrementSound()
 	c.ticks++
-	c.logger.Info().Msg(fmt.Sprintf("I: %d, sp: %X pc: %d, op: %X, shift: %X, vx: %X, nn: %X, tick: %d", c.registers.getIRegister(), c.stack.getStackPointer(), c.stack.getProgramCounter(), c.opcode, c.opcode.opDecode(), c.opcode.vx(), c.opcode.nn(), c.ticks))
+	c.logger.Info().Msg(fmt.Sprintf("Frame end: I: %d, sp: %X pc: %d, op: %X, shift: %X, vx: %X, vy: %d, nn: %X, tick: %d", c.registers.getIRegister(), c.stack.getStackPointer(), c.stack.getProgramCounter(), c.opcode, c.opcode.opDecode(), c.opcode.vx(), c.opcode.vy(), c.opcode.nn(), c.ticks))
 }
 
 func (c *Chip8) Cycle() {
